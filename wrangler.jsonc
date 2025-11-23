@@ -12,5 +12,23 @@
       "binding": "WORKER_SELF_REFERENCE",
       "service": "tanzeel"
     }
-  ]
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tanzeel-dev",
+      "database_id": "2b699f1c-c3f9-4c1c-a653-baf7173a1602"
+    }
+  ],
+  "env": {
+    "production": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "tanzeel-prod",
+          "database_id": "ede586ef-31d0-4f9a-aad4-72424f65c3e7"
+        }
+      ]
+    }
+  }
 }

@@ -1,5 +1,4 @@
 import "server-only";
-
 import {
   and,
   asc,
@@ -12,8 +11,7 @@ import {
   lt,
   type SQL,
 } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/d1";
 import type { ArtifactKind } from "@/components/artifact";
 import type { VisibilityType } from "@/components/visibility-selector";
 import { ChatSDKError } from "../errors";
@@ -34,13 +32,9 @@ import {
 } from "./schema";
 import { generateHashedPassword } from "./utils";
 
-// Optionally, if not using email/pass login, you can
-// use the Drizzle adapter for Auth.js / NextAuth
-// https://authjs.dev/reference/adapter/drizzle
-
-// biome-ignore lint: Forbidden non-null assertion.
-const client = postgres(process.env.POSTGRES_URL!);
-const db = drizzle(client);
+// D1 database connection
+// Available via globalThis in OpenNext.js environments (dev/prod)
+const db = drizzle((globalThis as any).DB);
 
 export async function getUser(email: string): Promise<User[]> {
   try {
@@ -543,8 +537,7 @@ export async function getMessageCountByUserId({
           gte(message.createdAt, twentyFourHoursAgo),
           eq(message.role, "user")
         )
-      )
-      .execute();
+      );
 
     return stats?.count ?? 0;
   } catch (_error) {
@@ -580,8 +573,7 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
       .select({ id: stream.id })
       .from(stream)
       .where(eq(stream.chatId, chatId))
-      .orderBy(asc(stream.createdAt))
-      .execute();
+      .orderBy(asc(stream.createdAt));
 
     return streamIds.map(({ id }) => id);
   } catch (_error) {
